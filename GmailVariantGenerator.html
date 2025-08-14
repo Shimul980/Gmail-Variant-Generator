@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gmail Variant Generator (1024)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 20px; }
+    input, button, textarea { font-size: 16px; margin: 10px 0; width: 100%; }
+    button { background: #28a745; color: white; padding: 10px; border: none; cursor: pointer; }
+    textarea { height: 400px; }
+  </style>
+</head>
+<body>
+  <h2>Gmail Variant Generator (1024+)</h2>
+  <input type="text" id="base" placeholder="Enter your Gmail username (without @gmail.com)">
+  <button onclick="generate()">Generate Variants</button>
+  <p id="status"></p>
+  <textarea id="output" placeholder="Generated emails will appear here..."></textarea>
+  <button onclick="copyToClipboard()">📋 Copy All</button>
+
+  <script>
+    function insertDots(str) {
+      let result = new Set();
+      const len = str.length;
+      const max = Math.pow(2, len - 1);
+      for (let i = 0; i < max; i++) {
+        let s = str[0];
+        for (let j = 0; j < len - 1; j++) {
+          s += (i & (1 << j)) ? "." + str[j + 1] : str[j + 1];
+        }
+        result.add(s);
+      }
+      return Array.from(result);
+    }
+
+    function generate() {
+      const base = document.getElementById("base").value.trim();
+      if (!base) return alert("Please enter a Gmail username!");
+      const tags = ['test', 'mail', 'bot', 'site', 'acc', 'demo', 'dev', 'user', '123'];
+      const dots = insertDots(base);
+      let result = new Set();
+
+      dots.forEach(d => {
+        result.add(`${d}@gmail.com`);
+        tags.forEach(t => {
+          result.add(`${d}+${t}@gmail.com`);
+        });
+      });
+
+      while (result.size < 1024) {
+        result.add(`${base}+${Math.floor(Math.random() * 9999)}@gmail.com`);
+      }
+
+      const output = Array.from(result).slice(0, 1024).join("\n");
+      document.getElementById("output").value = output;
+      document.getElementById("status").innerText = `✅ Total Variants: ${result.size}`;
+    }
+
+    function copyToClipboard() {
+      const output = document.getElementById("output");
+      output.select();
+      document.execCommand("copy");
+      alert("📋 Copied to clipboard!");
+    }
+  </script>
+</body>
+</html>
